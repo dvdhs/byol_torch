@@ -18,8 +18,6 @@ class BYOLOnlineNetwork(nn.Module):
         self.projection_head = MLP(2048, projection_dim)
         self.prediction_head = MLP(projection_dim, projection_dim)
 
-        # TODO: dont hardcode image resize size, current assume CIFAR-10
-        self.augs1, self.augs2 = get_simclr_augments(20), get_simclr_augments(20)
     def forward(self, x):
         x = self.encoder(x)
         x = torch.flatten(x, 1)
@@ -33,7 +31,9 @@ class BYOLNetwork(nn.Module):
         self.beta = momentum
         self.online = BYOLOnlineNetwork(encoder=encoder_type)
         self.teacher = self._get_teacher(self.online)
-    
+        # TODO: dont hardcode image resize size, current assume CIFAR-10
+        self.augs1, self.augs2 = get_simclr_augments(20), get_simclr_augments(20)
+        
     def _get_teacher(self, online):
         teacher_encoder = copy.deepcopy(online.encoder)
         teacher_projector = copy.deepcopy(online.projector)
@@ -58,6 +58,7 @@ class BYOLNetwork(nn.Module):
         
         # Return symmetric BYOL loss
         return (BYOLLoss(online_pred1, teacher_pred2) + BYOLLoss(online_pred2, teacher_pred1)).mean()
-    
+        
+    # Yields the encoder
     def get_encoder(self):
         return self.online.encoder

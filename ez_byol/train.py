@@ -1,4 +1,4 @@
-from rich import track
+from rich.progress import track
 
 def train_one_epoch(model, optimizer, dataloader, device):
     model.train()

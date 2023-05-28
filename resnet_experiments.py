@@ -24,7 +24,7 @@ def main(encoder_path='./checkpoints/model+resnet18.pth', epochs=80, dataset='CI
         test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=256, shuffle=False, num_workers=4, pin_memory=True)
     else:
         raise Exception(f"Unknown dataset provided: {dataset}")
-        
+    num_classes = 10 if dataset == 'CIFAR10' else 100
     # get encoder type
     encoder_type = encoder_path.split('+')[1].split('.')[0]
     if encoder_type == 'resnet18':
@@ -38,7 +38,7 @@ def main(encoder_path='./checkpoints/model+resnet18.pth', epochs=80, dataset='CI
     encoder.load_state_dict(torch.load(encoder_path))
     
     # begin linear experiment
-    experiment = LinearExperimentationRegime(encoder, 1000, 10, train_dataloader, test_dataloader, epochs=epochs)
+    experiment = LinearExperimentationRegime(encoder, 1000, 100, train_dataloader, test_dataloader, epochs=epochs)
     res = experiment.run()
     print(f"[green]Linear experiment result: {res}")
 

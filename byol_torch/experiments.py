@@ -49,6 +49,7 @@ class LinearExperimentationRegime:
     def __init__(self, encoder, input_dim, output_dim, train_loader, test_loader, epochs=80, lr=1e-3, device=None):
         self.device = device if device is not None else torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.classifier = LinearClassifier(encoder, input_dim, output_dim)
+        self.classifer = self.classifier.to(self.device)
         self.epochs = epochs
         self.train_loader = train_loader
         self.test_loader = test_loader

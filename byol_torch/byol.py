@@ -30,13 +30,13 @@ class BYOLOnlineNetwork(nn.Module):
         return x
 
 class BYOLNetwork(nn.Module):
-    def __init__(self, encoder=None, encoder_out=1000, momentum=0.99):
+    def __init__(self, encoder=None, encoder_out=1000, momentum=0.99, resize=20):
         super().__init__()
         self.beta = momentum
         self.online = BYOLOnlineNetwork(encoder=encoder, encoder_out_features=encoder_out)
         self.teacher = self._get_teacher(self.online)
         # TODO: dont hardcode image resize size, current assume CIFAR-10
-        self.augs1, self.augs2 = get_simclr_augments(20), get_simclr_augments(20)
+        self.augs1, self.augs2 = get_simclr_augments(resize), get_simclr_augments(resize)
         
     def _get_teacher(self, online):
         teacher_encoder = copy.deepcopy(online.encoder)

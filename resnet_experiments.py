@@ -3,7 +3,7 @@ import torch
 import torchvision
 from rich import print
 
-from .experiments import LinearExperimentationRegime
+from byol_torch.experiments import LinearExperimentationRegime
 
 def main(encoder='./checkpoints/model+resnet18.pth', epochs=80):
     # Load CIFAR10 dataset

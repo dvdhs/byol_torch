@@ -7,11 +7,11 @@ from .experiments import LinearExperimentationRegime
 
 def main(encoder='./checkpoints/model+resnet18.pth', epochs=80):
     # Load CIFAR10 dataset
-    train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, T.ToTensor())
+    train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=T.ToTensor())
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=256, shuffle=True, num_workers=4, pin_memory=True)
 
     # Test data
-    test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, T.ToTensor())
+    test_dataset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transformT.ToTensor())
     test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=256, shuffle=False, num_workers=4, pin_memory=True)
 
     # get encoder type
@@ -30,6 +30,6 @@ def main(encoder='./checkpoints/model+resnet18.pth', epochs=80):
     experiment = LinearExperimentationRegime(encoder, 1000, 10, train_dataloader, test_dataloader, epochs=epochs)
     res = experiment.run()
     print(f"[green]Linear experiment result: {res}")
-    
+
 if __name__ == "__main__":
     fire.Fire(main)

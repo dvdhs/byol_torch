@@ -14,13 +14,4 @@ def MLP(input_sz,  projection_sz=256, hidden_sz=4096):
         nn.Linear(hidden_sz, projection_sz)
     )
 
-def Encoder(name='resnet50', pretrained=False):
-    if name == 'resnet18':
-        model = torchvision.models.resnet18(pretrained=pretrained)
-    if name == 'resnet50':
-        model = torchvision.models.resnet50(pretrained=pretrained)
-    if name == 'resnet101':
-        model = torchvision.models.resnet101(pretrained=pretrained)
-    # strip head layer
-    return nn.Sequential(*list(model.children())[:-1])
 

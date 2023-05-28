@@ -8,14 +8,17 @@ from torchvision import transforms as T
 from rich import print
 from rich.progress import track
 
-from .networks import MLP, Encoder
+from .networks import MLP
 from .utils import set_grad, get_simclr_augments, BYOLLoss
 
 class BYOLOnlineNetwork(nn.Module):
-    def __init__(self, encoder='resnet50', projection_dim = 256):
+    def __init__(self, encoder=None, encoder_out_features = 1000, projection_dim = 256):
         super().__init__()
-        self.encoder = Encoder(name=encoder)
-        self.projection_head = MLP(2048, projection_dim)
+        if encoder is None:
+            raise NotImplementedError('No encoder provided')
+        
+        self.encoder = encoder
+        self.projection_head = MLP(encoder_out_features, projection_dim)
         self.prediction_head = MLP(projection_dim, projection_dim)
 
     def forward(self, x):
@@ -27,16 +30,17 @@ class BYOLOnlineNetwork(nn.Module):
         return x
 
 class BYOLNetwork(nn.Module):
-    def __init__(self, encoder_type = 'resnet50', momentum=0.99):
+    def __init__(self, encoder=None, encoder_out=1000, momentum=0.99):
+        super().__init__()
         self.beta = momentum
-        self.online = BYOLOnlineNetwork(encoder=encoder_type)
+        self.online = BYOLOnlineNetwork(encoder=encoder, encoder_out_features=encoder_out)
         self.teacher = self._get_teacher(self.online)
         # TODO: dont hardcode image resize size, current assume CIFAR-10
         self.augs1, self.augs2 = get_simclr_augments(20), get_simclr_augments(20)
         
     def _get_teacher(self, online):
         teacher_encoder = copy.deepcopy(online.encoder)
-        teacher_projector = copy.deepcopy(online.projector)
+        teacher_projector = copy.deepcopy(online.projection_head)
         set_grad(teacher_encoder, False)
         set_grad(teacher_projector, False)
         return nn.Sequential(teacher_encoder, nn.Flatten(), teacher_projector)
@@ -45,7 +49,7 @@ class BYOLNetwork(nn.Module):
     def update_teacher(self):
         for online_param, teacher_param in zip(self.online.parameters(), self.teacher.parameters()):
             teacher_param.data = teacher_param.data * self.beta + online_param.data * (1-self.beta)
-
+    
     def forward(self, x):
         x1 = self.augs1(x)
         x2 = self.augs2(x)

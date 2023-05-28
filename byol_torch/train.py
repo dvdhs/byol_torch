@@ -14,6 +14,7 @@ def train_one_epoch(model, optimizer, dataloader, device):
     return epoch_loss / len(dataloader)
 
 def train(model, optimizer, dataloader, device, epochs=100):
+    model = model.to(device)
     for epoch in track(range(epochs)):
         epoch_loss = train_one_epoch(model, optimizer, dataloader, device)
         print(f"Epoch {epoch} loss: {epoch_loss}")

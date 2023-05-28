@@ -68,7 +68,7 @@ class LinearExperimentationRegime:
                 tloss += loss.item()
                 optimizer.step()
             tloss /= len(self.train_loader)
-            print(f'Epoch {epoch} loss: {tloss.item()}')
+            print(f'Epoch {epoch} loss: {tloss}')
     
     def evaluate(self):
         correct = 0

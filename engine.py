@@ -24,7 +24,7 @@ def main(encoder_type='resnet18', epochs=100, device=None, name='model', batch_s
         train_dataset = torchvision.datasets.CIFAR100(root='./data', train=True, download=True, transform=T.ToTensor())
         train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
     elif dataset == 'STL10':
-        train_dataset = torchvision.datasets.STL10(root='./data', split='train', download=True, transform=T.ToTensor())
+        train_dataset = torchvision.datasets.STL10(root='./data', split='unlabeled', download=True, transform=T.ToTensor())
         train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
     
     network = BYOLNetwork(encoder, 1000, resize=resize)

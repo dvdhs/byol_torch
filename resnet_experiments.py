@@ -1,6 +1,7 @@
 import fire
 import torch
 import torchvision
+import torchvision.transforms as T
 from rich import print
 
 from byol_torch.experiments import LinearExperimentationRegime

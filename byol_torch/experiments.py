@@ -4,6 +4,8 @@ Experimentation with BYOL
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from rich import print
+from rich.progress import track
 
 class LinearClassifier(nn.Module):
     """
@@ -15,6 +17,7 @@ class LinearClassifier(nn.Module):
         self.encoder = encoder
     def forward(self, x):
         x = self.encoder(x)
+        x = nn.Flatten()(x)
         x = self.linear(x)
         return x
 
@@ -44,7 +47,7 @@ then evaluate the performance of the linear classifier on the given test set
 """
 class LinearExperimentationRegime:
     def __init__(self, encoder, input_dim, output_dim, train_loader, test_loader, epochs=80, lr=1e-3):
-        self.classifier = LinearClassifer(encoder, input_dim, output_dim)
+        self.classifier = LinearClassifier(encoder, input_dim, output_dim)
         self.epochs = epochs
         self.train_loader = train_loader
         self.test_loader = test_loader
@@ -52,13 +55,17 @@ class LinearExperimentationRegime:
     
     def train(self):
         optimizer = torch.optim.Adam(self.classifier.parameters(), lr=self.lr)
-        for epoch in range(self.epochs):
+        for epoch in track(range(self.epochs)):
+            tloss = 0
             for x, y in self.train_loader:
                 optimizer.zero_grad()
                 logits = self.classifier(x)
                 loss = F.cross_entropy(logits, y)
                 loss.backward()
+                tloss += loss.item()
                 optimizer.step()
+            tloss /= len(self.train_loader)
+            print(f'Epoch {epoch} loss: {tloss.item()}')
     
     def evaluate(self):
         correct = 0

@@ -33,7 +33,7 @@ def main(encoder_type='resnet18', epochs=100, device=None, name='model', batch_s
     if not os.path.exists('./train_logs'):
         os.makedirs('./train_logs')
     np.savetxt(f"./train_logs/{name}+{encoder_type}.csv", losses, delimiter=",")
-    torch.save(network.state_dict(), f"./checkpoints/{name}+{encoder_type}.pth")
+    torch.save(network.online.encoder.state_dict(), f"./checkpoints/{name}+{encoder_type}.pth")
 
 
 

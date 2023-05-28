@@ -7,14 +7,18 @@ import torch.nn.functional as F
 from rich import print
 from rich.progress import track
 
+from .utils import set_grad
+
 class LinearClassifier(nn.Module):
     """
-    Experimentation with linear layers
+    Experimentation with linear layers, encoder is frozen
     """
     def __init__(self, encoder, input_dim, output_dim):
         super().__init__()
         self.linear = nn.Linear(input_dim, output_dim)
         self.encoder = encoder
+        set_grad(self.encoder, False)
+        
     def forward(self, x):
         x = self.encoder(x)
         x = nn.Flatten()(x)

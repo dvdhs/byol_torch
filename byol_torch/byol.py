@@ -61,7 +61,7 @@ class BYOLNetwork(nn.Module):
             teacher_pred2 = self.teacher(x2)
         
         # Return symmetric BYOL loss
-        return (BYOLLoss(online_pred1, teacher_pred2) + BYOLLoss(online_pred2, teacher_pred1)).mean()
+        return (BYOLLoss(online_pred1, teacher_pred2.detach()) + BYOLLoss(online_pred2, teacher_pred1.detach())).mean()
         
     # Yields the encoder
     def get_encoder(self):

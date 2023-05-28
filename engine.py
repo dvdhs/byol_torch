@@ -8,7 +8,7 @@ from byol_torch.train import train
 
 import torchvision.transforms as T
 
-def main(encoder_type='resnet18', epochs=100, device=None, name='model', batch_size=256, num_workers=4):
+def main(encoder_type='resnet18', epochs=100, device=None, name='model', batch_size=256, num_workers=4, dataset='CIFAR10'):
     if encoder_type == 'resnet18':
         encoder = torchvision.models.resnet18(pretrained=False)
     elif encoder_type == 'resnet50':
@@ -17,8 +17,12 @@ def main(encoder_type='resnet18', epochs=100, device=None, name='model', batch_s
         raise Exception(f"Unknown encoder type provided: {encoder_type}")
     
     # Load CIFAR10 dataset
-    train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=T.ToTensor())
-    train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
+    if dataset == 'CIFAR10':
+        train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=T.ToTensor())
+        train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
+    elif dataset == 'CIFAR100':
+        train_dataset = torchvision.datasets.CIFAR100(root='./data', train=True, download=True, transform=T.ToTensor())
+        train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
 
     network = BYOLNetwork(encoder, 1000)
     optimizer = torch.optim.Adam(network.parameters(), lr=3e-4)

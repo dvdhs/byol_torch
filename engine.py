@@ -1,6 +1,7 @@
 import fire
 import torch
 import torchvision
+import os
 from byol_torch.byol import BYOLNetwork
 from byol_torch.train import train
 
@@ -26,9 +27,12 @@ def main(encoder_type='resnet18', epochs=100, device=None, name='model'):
     train(network, optimizer, train_dataloader, device, epochs=epochs)
     
     # save network
+    if not os.path.exists('./checkpoints'):
+        os.makedirs('./checkpoints')
+    
     torch.save(network.state_dict(), f"./checkpoints/{name}+{encoder_type}.pth")
 
-    
+
 
 if __name__ == "__main__":
     fire.Fire(main)
